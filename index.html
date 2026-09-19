@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Fototessera A4 Guida Taglio</title>
+<title>Fototessera A4 Guida Taglio Centrata</title>
 <style>
   body { font-family: sans-serif; padding: 20px; display: flex; flex-direction: column; align-items: center; }
   .grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; margin: 20px 0; }
@@ -27,7 +27,7 @@
 <input type="file" id="input-gallery" accept="image/*" style="display:none">
 
 <div id="grid" class="grid"></div>
-<button class="btn" id="btn-pdf">Genera PDF con Guide</button>
+<button class="btn" id="btn-pdf">Genera PDF A4</button>
 
 <script>
   let dataUrl = null;
@@ -65,29 +65,25 @@
     const { jsPDF } = window.jspdf || window;
     const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
 
-    // Configurazione guide
     doc.setDrawColor(200, 200, 200);
-    doc.setLineDash([1, 1], 0); // Tratteggio
+    doc.setLineDash([1, 1], 0);
 
-    // Disegna linee di taglio
-    // Verticali
     for(let col=0; col<=5; col++) {
-        doc.line(11.5 + col*38, 6, 11.5 + col*38, 291);
+        doc.line(11.5 + col*38, 6, 11.5 + col*38, 294);
     }
-    // Orizzontali
     for(let row=0; row<=6; row++) {
         doc.line(11.5, 6 + row*48, 201.5, 6 + row*48);
     }
 
-    // Aggiungi foto
     selected.forEach((active, i) => {
         if(active) {
             let row = Math.floor(i / 5);
             let col = i % 5;
-            doc.addImage(dataUrl, 'JPEG', 11.5 + (col*38), 6 + (row*48), 35, 45);
+            // Centro la foto: aggiungo 1.5mm di offset per bilanciare (38-35)/2 e (48-45)/2
+            doc.addImage(dataUrl, 'JPEG', 11.5 + (col*38) + 1.5, 6 + (row*48) + 1.5, 35, 45);
         }
     });
-    doc.save('fototessera_a4_guide.pdf');
+    doc.save('fototessera_a4_guide_centrate.pdf');
   };
 </script>
 </body>
