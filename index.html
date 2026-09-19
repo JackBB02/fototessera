@@ -6,7 +6,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="theme-color" content="#1B2A4A">
-<title>Fototessera</title>
+<title>Fototessera A5</title>
 <link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoiRm90b3Rlc3NlcmEiLCJzaG9ydF9uYW1lIjoiRm90b3Rlc3NlcmEiLCJzdGFydF91cmwiOiIuIiwiZGlzcGxheSI6InN0YW5kYWxvbmUiLCJiYWNrZ3JvdW5kX2NvbG9yIjoiI0ZBRkFGQSIsInRoZW1lX2NvbG9yIjoiIzFCMkE0QSJ9">
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
@@ -74,7 +74,6 @@
     display: flex;
   }
 
-  /* Step 1: Upload */
   .upload-area {
     margin-top: 24px;
     flex: 1;
@@ -155,18 +154,6 @@
     border: 1px solid var(--grey-border);
   }
 
-  .btn-danger {
-    background: var(--red-soft);
-    color: #fff;
-  }
-
-  .btn svg {
-    width: 20px;
-    height: 20px;
-    flex-shrink: 0;
-  }
-
-  /* Step 2: Crop */
   .crop-container {
     position: relative;
     width: 100%;
@@ -260,7 +247,6 @@
     padding-bottom: 8px;
   }
 
-  /* Step 3: Preview & PDF */
   .preview-section {
     margin-top: 16px;
     flex: 1;
@@ -284,7 +270,7 @@
     grid-template-columns: repeat(2, 1fr);
     grid-template-rows: repeat(4, 1fr);
     gap: 6px;
-    max-width: 200px;
+    max-width: 140px;
     width: 100%;
   }
 
@@ -310,7 +296,6 @@
     padding-bottom: 8px;
   }
 
-  /* Loading spinner */
   .spinner {
     display: none;
     width: 24px;
@@ -328,49 +313,19 @@
   .btn.loading .spinner { display: block; }
   .btn.loading .btn-label { display: none; }
 
-  /* Hidden file inputs */
   input[type="file"] {
     display: none;
   }
-
-  /* Guide lines inside crop rect */
-  .crop-guides {
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-  }
-
-  .crop-guides .h-line {
-    position: absolute;
-    left: 0;
-    right: 0;
-    height: 1px;
-    background: rgba(255,255,255,0.25);
-  }
-
-  .crop-guides .v-line {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    width: 1px;
-    background: rgba(255,255,255,0.25);
-  }
-
-  .crop-guides .h-line:nth-child(1) { top: 33.33%; }
-  .crop-guides .h-line:nth-child(2) { top: 66.66%; }
-  .crop-guides .v-line:nth-child(3) { left: 33.33%; }
-  .crop-guides .v-line:nth-child(4) { left: 66.66%; }
 </style>
 </head>
 <body>
 
 <div class="app">
   <header>
-    <h1>Fototessera</h1>
-    <p>Formato italiano 35 × 45 mm — 8 foto su A4</p>
+    <h1>Fototessera A5</h1>
+    <p>Formato italiano 35 × 45 mm — 8 foto su A5</p>
   </header>
 
-  <!-- Step 1: Upload / Camera -->
   <div class="step active" id="step-upload">
     <div class="upload-area">
       <div class="upload-zone" id="upload-zone">
@@ -379,43 +334,23 @@
           <circle cx="8.5" cy="8.5" r="1.5"/>
           <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/>
         </svg>
-        <span>Tocca per caricare una foto o scattarne una nuova</span>
+        <span>Carica o scatta una foto</span>
       </div>
       <div class="upload-buttons">
-        <button class="btn btn-primary" id="btn-camera">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/>
-            <circle cx="12" cy="13" r="3"/>
-          </svg>
-          <span>Scatta</span>
-        </button>
-        <button class="btn btn-secondary" id="btn-gallery">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="3" y="3" width="18" height="18" rx="2"/>
-            <circle cx="8.5" cy="8.5" r="1.5"/>
-            <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/>
-          </svg>
-          <span>Galleria</span>
-        </button>
+        <button class="btn btn-primary" id="btn-camera">Scatta</button>
+        <button class="btn btn-secondary" id="btn-gallery">Galleria</button>
       </div>
     </div>
     <input type="file" accept="image/*" capture="user" id="input-camera">
     <input type="file" accept="image/*" id="input-gallery">
   </div>
 
-  <!-- Step 2: Crop -->
   <div class="step" id="step-crop">
     <div class="crop-container">
       <div class="crop-canvas-wrap" id="crop-wrap">
-        <img id="crop-img" src="" alt="Foto da ritagliare">
+        <img id="crop-img" src="" alt="Foto">
         <div class="crop-overlay">
           <div class="crop-rect" id="crop-rect">
-            <div class="crop-guides">
-              <div class="h-line"></div>
-              <div class="h-line"></div>
-              <div class="v-line"></div>
-              <div class="v-line"></div>
-            </div>
             <div class="crop-handle tl" data-handle="tl"></div>
             <div class="crop-handle tr" data-handle="tr"></div>
             <div class="crop-handle bl" data-handle="bl"></div>
@@ -423,28 +358,25 @@
           </div>
         </div>
       </div>
-      <p class="crop-info">Sposta e ridimensiona il riquadro per inquadrare il viso</p>
+      <p class="crop-info">Ritaglia il viso</p>
     </div>
     <div class="crop-actions">
       <button class="btn btn-secondary" id="btn-back-upload">Indietro</button>
-      <button class="btn btn-primary" id="btn-confirm-crop">
-        <span class="btn-label">Ritaglia</span>
-      </button>
+      <button class="btn btn-primary" id="btn-confirm-crop">Ritaglia</button>
     </div>
   </div>
 
-  <!-- Step 3: Preview & Generate PDF -->
   <div class="step" id="step-preview">
     <div class="preview-section">
       <div class="preview-grid-wrap">
         <div class="preview-grid" id="preview-grid"></div>
       </div>
-      <p class="preview-info">Anteprima griglia 2 × 4 — formato A4</p>
+      <p class="preview-info">Griglia 2 × 4 — foglio A5</p>
     </div>
     <div class="preview-actions">
       <button class="btn btn-secondary" id="btn-back-crop">Indietro</button>
       <button class="btn btn-primary" id="btn-generate-pdf">
-        <span class="btn-label">Genera PDF</span>
+        <span class="btn-label">Genera PDF A5</span>
         <div class="spinner"></div>
       </button>
     </div>
@@ -455,67 +387,27 @@
 <script>
 (function() {
   'use strict';
-
-  // ── Constants ──
-  // Italian passport photo: 35mm × 45mm
   const PHOTO_W_MM = 35;
   const PHOTO_H_MM = 45;
-  const ASPECT = PHOTO_W_MM / PHOTO_H_MM; // ~0.7778
+  const ASPECT = PHOTO_W_MM / PHOTO_H_MM;
   const COLS = 2;
   const ROWS = 4;
-
-  // A4 dimensions in mm
-  const A4_W = 210;
-  const A4_H = 297;
-
-  // Grid spacing on A4
+  const A5_W = 148;
+  const A5_H = 210;
   const GRID_GAP_MM = 3;
-  const GRID_TOTAL_W = COLS * PHOTO_W_MM + (COLS - 1) * GRID_GAP_MM; // 73mm
-  const GRID_TOTAL_H = ROWS * PHOTO_H_MM + (ROWS - 1) * GRID_GAP_MM; // 189mm
-  const GRID_OFFSET_X = (A4_W - GRID_TOTAL_W) / 2;
-  const GRID_OFFSET_Y = (A4_H - GRID_TOTAL_H) / 2;
-
-  // High-res output for each photo in the PDF (300 DPI)
+  const GRID_TOTAL_W = COLS * PHOTO_W_MM + (COLS - 1) * GRID_GAP_MM;
+  const GRID_TOTAL_H = ROWS * PHOTO_H_MM + (ROWS - 1) * GRID_GAP_MM;
+  const GRID_OFFSET_X = (A5_W - GRID_TOTAL_W) / 2;
+  const GRID_OFFSET_Y = (A5_H - GRID_TOTAL_H) / 2;
   const DPI = 300;
-  const PHOTO_W_PX = Math.round(PHOTO_W_MM / 25.4 * DPI); // ~413px
-  const PHOTO_H_PX = Math.round(PHOTO_H_MM / 25.4 * DPI); // ~531px
+  const PHOTO_W_PX = Math.round(PHOTO_W_MM / 25.4 * DPI);
+  const PHOTO_H_PX = Math.round(PHOTO_H_MM / 25.4 * DPI);
 
-  // ── DOM refs ──
   const steps = document.querySelectorAll('.step');
-  const uploadZone = document.getElementById('upload-zone');
-  const inputCamera = document.getElementById('input-camera');
-  const inputGallery = document.getElementById('input-gallery');
-  const btnCamera = document.getElementById('btn-camera');
-  const btnGallery = document.getElementById('btn-gallery');
-
-  const cropWrap = document.getElementById('crop-wrap');
-  const cropImg = document.getElementById('crop-img');
-  const cropRect = document.getElementById('crop-rect');
-  const btnBackUpload = document.getElementById('btn-back-upload');
-  const btnConfirmCrop = document.getElementById('btn-confirm-crop');
-
-  const previewGrid = document.getElementById('preview-grid');
-  const btnBackCrop = document.getElementById('btn-back-crop');
-  const btnGeneratePdf = document.getElementById('btn-generate-pdf');
-
-  // ── State ──
-  let originalImage = null; // HTMLImageElement of the loaded photo
-  let croppedDataUrl = null;
-
-  // Crop state (all in px relative to the crop-wrap element)
-  let crop = { x: 0, y: 0, w: 0, h: 0 };
-  let imgDisplay = { x: 0, y: 0, w: 0, h: 0 }; // displayed image bounds inside crop-wrap
-
-  // ── Navigation ──
-  function showStep(id) {
-    steps.forEach(s => s.classList.remove('active'));
-    document.getElementById(id).classList.add('active');
-  }
-
-  // ── Step 1: Image loading ──
-  uploadZone.addEventListener('click', () => inputGallery.click());
-  btnCamera.addEventListener('click', () => inputCamera.click());
-  btnGallery.addEventListener('click', () => inputGallery.click());
+  // Simple selectors for this version
+  document.getElementById('upload-zone').addEventListener('click', () => document.getElementById('input-gallery').click());
+  document.getElementById('btn-camera').addEventListener('click', () => document.getElementById('input-camera').click());
+  document.getElementById('btn-gallery').addEventListener('click', () => document.getElementById('input-gallery').click());
 
   function handleFile(file) {
     if (!file || !file.type.startsWith('image/')) return;
@@ -531,319 +423,66 @@
     reader.readAsDataURL(file);
   }
 
-  inputCamera.addEventListener('change', (e) => {
-    if (e.target.files[0]) handleFile(e.target.files[0]);
-  });
-  inputGallery.addEventListener('change', (e) => {
-    if (e.target.files[0]) handleFile(e.target.files[0]);
-  });
+  document.getElementById('input-camera').addEventListener('change', (e) => e.target.files[0] && handleFile(e.target.files[0]));
+  document.getElementById('input-gallery').addEventListener('change', (e) => e.target.files[0] && handleFile(e.target.files[0]));
 
-  // ── Step 2: Crop ──
+  let originalImage = null, croppedDataUrl = null;
+  let crop = { x: 0, y: 0, w: 0, h: 0 }, imgDisplay = { x: 0, y: 0, w: 0, h: 0 };
+
+  function showStep(id) {
+    steps.forEach(s => s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+  }
+
   function initCrop() {
-    cropImg.src = originalImage.src;
+    document.getElementById('crop-img').src = originalImage.src;
     showStep('step-crop');
-
-    // Wait for the image to layout
     requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        computeImgDisplay();
-        resetCropRect();
-      });
+        const wrapRect = document.getElementById('crop-wrap').getBoundingClientRect();
+        const imgRect = document.getElementById('crop-img').getBoundingClientRect();
+        imgDisplay = { x: imgRect.left - wrapRect.left, y: imgRect.top - wrapRect.top, w: imgRect.width, h: imgRect.height };
+        let cw = imgDisplay.w * 0.8, ch = cw / ASPECT;
+        crop = { x: imgDisplay.x + (imgDisplay.w - cw) / 2, y: imgDisplay.y + (imgDisplay.h - ch) / 2, w: cw, h: ch };
+        applyCropRect();
     });
   }
 
-  function computeImgDisplay() {
-    const wrapRect = cropWrap.getBoundingClientRect();
-    const imgRect = cropImg.getBoundingClientRect();
-    imgDisplay = {
-      x: imgRect.left - wrapRect.left,
-      y: imgRect.top - wrapRect.top,
-      w: imgRect.width,
-      h: imgRect.height
-    };
-  }
-
-  function resetCropRect() {
-    // Default crop: as large as possible centered, with the correct aspect ratio
-    let cw, ch;
-    if (imgDisplay.w / imgDisplay.h > ASPECT) {
-      // Image is wider: constrain by height
-      ch = imgDisplay.h * 0.85;
-      cw = ch * ASPECT;
-    } else {
-      // Image is taller: constrain by width
-      cw = imgDisplay.w * 0.85;
-      ch = cw / ASPECT;
-    }
-    crop.w = cw;
-    crop.h = ch;
-    crop.x = imgDisplay.x + (imgDisplay.w - cw) / 2;
-    crop.y = imgDisplay.y + (imgDisplay.h - ch) / 2;
-    applyCropRect();
-  }
-
   function applyCropRect() {
-    cropRect.style.left = crop.x + 'px';
-    cropRect.style.top = crop.y + 'px';
-    cropRect.style.width = crop.w + 'px';
-    cropRect.style.height = crop.h + 'px';
+    const r = document.getElementById('crop-rect');
+    r.style.cssText = `left:${crop.x}px; top:${crop.y}px; width:${crop.w}px; height:${crop.h}px;`;
   }
 
-  function clampCrop() {
-    // Keep crop inside the image display area
-    if (crop.x < imgDisplay.x) crop.x = imgDisplay.x;
-    if (crop.y < imgDisplay.y) crop.y = imgDisplay.y;
-    if (crop.x + crop.w > imgDisplay.x + imgDisplay.w) crop.x = imgDisplay.x + imgDisplay.w - crop.w;
-    if (crop.y + crop.h > imgDisplay.y + imgDisplay.h) crop.y = imgDisplay.y + imgDisplay.h - crop.h;
-  }
-
-  // Drag & resize handlers
-  let dragMode = null; // 'move' | 'tl' | 'tr' | 'bl' | 'br'
-  let dragStart = { x: 0, y: 0 };
-  let cropStart = { x: 0, y: 0, w: 0, h: 0 };
-
-  function getPointerPos(e) {
-    const touch = e.touches ? e.touches[0] : e;
-    const wrapRect = cropWrap.getBoundingClientRect();
-    return {
-      x: touch.clientX - wrapRect.left,
-      y: touch.clientY - wrapRect.top
-    };
-  }
-
-  function onPointerDown(e) {
-    e.preventDefault();
-    const target = e.target;
-    if (target.classList.contains('crop-handle')) {
-      dragMode = target.dataset.handle;
-    } else if (target === cropRect || target.closest('.crop-rect')) {
-      dragMode = 'move';
-    } else {
-      return;
-    }
-    dragStart = getPointerPos(e);
-    cropStart = { ...crop };
-    document.addEventListener('mousemove', onPointerMove, { passive: false });
-    document.addEventListener('mouseup', onPointerUp);
-    document.addEventListener('touchmove', onPointerMove, { passive: false });
-    document.addEventListener('touchend', onPointerUp);
-  }
-
-  function onPointerMove(e) {
-    e.preventDefault();
-    if (!dragMode) return;
-    const pos = getPointerPos(e);
-    const dx = pos.x - dragStart.x;
-    const dy = pos.y - dragStart.y;
-
-    if (dragMode === 'move') {
-      crop.x = cropStart.x + dx;
-      crop.y = cropStart.y + dy;
-      clampCrop();
-    } else {
-      // Resize from corners, keeping aspect ratio
-      let newW, newH;
-      if (dragMode === 'br') {
-        newW = Math.max(40, cropStart.w + dx);
-        newH = newW / ASPECT;
-        crop.w = newW;
-        crop.h = newH;
-      } else if (dragMode === 'bl') {
-        newW = Math.max(40, cropStart.w - dx);
-        newH = newW / ASPECT;
-        crop.x = cropStart.x + (cropStart.w - newW);
-        crop.w = newW;
-        crop.h = newH;
-      } else if (dragMode === 'tr') {
-        newW = Math.max(40, cropStart.w + dx);
-        newH = newW / ASPECT;
-        crop.y = cropStart.y + (cropStart.h - newH);
-        crop.w = newW;
-        crop.h = newH;
-      } else if (dragMode === 'tl') {
-        newW = Math.max(40, cropStart.w - dx);
-        newH = newW / ASPECT;
-        crop.x = cropStart.x + (cropStart.w - newW);
-        crop.y = cropStart.y + (cropStart.h - newH);
-        crop.w = newW;
-        crop.h = newH;
-      }
-
-      // Clamp to image bounds
-      if (crop.x < imgDisplay.x) {
-        const over = imgDisplay.x - crop.x;
-        crop.x = imgDisplay.x;
-        crop.w -= over;
-        crop.h = crop.w / ASPECT;
-      }
-      if (crop.y < imgDisplay.y) {
-        const over = imgDisplay.y - crop.y;
-        crop.y = imgDisplay.y;
-        crop.h -= over;
-        crop.w = crop.h * ASPECT;
-      }
-      if (crop.x + crop.w > imgDisplay.x + imgDisplay.w) {
-        crop.w = imgDisplay.x + imgDisplay.w - crop.x;
-        crop.h = crop.w / ASPECT;
-      }
-      if (crop.y + crop.h > imgDisplay.y + imgDisplay.h) {
-        crop.h = imgDisplay.y + imgDisplay.h - crop.y;
-        crop.w = crop.h * ASPECT;
-      }
-    }
-
-    applyCropRect();
-  }
-
-  function onPointerUp() {
-    dragMode = null;
-    document.removeEventListener('mousemove', onPointerMove);
-    document.removeEventListener('mouseup', onPointerUp);
-    document.removeEventListener('touchmove', onPointerMove);
-    document.removeEventListener('touchend', onPointerUp);
-  }
-
-  cropRect.addEventListener('mousedown', onPointerDown);
-  cropRect.addEventListener('touchstart', onPointerDown, { passive: false });
-  document.querySelectorAll('.crop-handle').forEach(h => {
-    h.addEventListener('mousedown', onPointerDown);
-    h.addEventListener('touchstart', onPointerDown, { passive: false });
-  });
-
-  // Handle window resize
-  window.addEventListener('resize', () => {
-    if (document.getElementById('step-crop').classList.contains('active')) {
-      const oldImgW = imgDisplay.w;
-      const oldImgH = imgDisplay.h;
-      const oldImgX = imgDisplay.x;
-      const oldImgY = imgDisplay.y;
-      computeImgDisplay();
-      // Scale crop proportionally
-      if (oldImgW > 0 && oldImgH > 0) {
-        const sx = imgDisplay.w / oldImgW;
-        const sy = imgDisplay.h / oldImgH;
-        crop.x = imgDisplay.x + (crop.x - oldImgX) * sx;
-        crop.y = imgDisplay.y + (crop.y - oldImgY) * sy;
-        crop.w *= sx;
-        crop.h *= sy;
-        clampCrop();
-        applyCropRect();
-      }
-    }
-  });
-
-  // Confirm crop
-  btnConfirmCrop.addEventListener('click', () => {
-    performCrop();
-    showPreview();
-  });
-
-  function performCrop() {
-    // Convert crop rect (screen px) to original image coordinates
-    const scaleX = originalImage.naturalWidth / imgDisplay.w;
-    const scaleY = originalImage.naturalHeight / imgDisplay.h;
-
-    const srcX = (crop.x - imgDisplay.x) * scaleX;
-    const srcY = (crop.y - imgDisplay.y) * scaleY;
-    const srcW = crop.w * scaleX;
-    const srcH = crop.h * scaleY;
-
-    // Draw cropped area at high resolution
+  document.getElementById('btn-confirm-crop').addEventListener('click', () => {
+    const scaleX = originalImage.naturalWidth / imgDisplay.w, scaleY = originalImage.naturalHeight / imgDisplay.h;
     const canvas = document.createElement('canvas');
-    canvas.width = PHOTO_W_PX;
-    canvas.height = PHOTO_H_PX;
-    const ctx = canvas.getContext('2d');
-
-    ctx.imageSmoothingEnabled = true;
-    ctx.imageSmoothingQuality = 'high';
-    ctx.drawImage(originalImage, srcX, srcY, srcW, srcH, 0, 0, PHOTO_W_PX, PHOTO_H_PX);
-
+    canvas.width = PHOTO_W_PX; canvas.height = PHOTO_H_PX;
+    canvas.getContext('2d').drawImage(originalImage, (crop.x - imgDisplay.x) * scaleX, (crop.y - imgDisplay.y) * scaleY, crop.w * scaleX, crop.h * scaleY, 0, 0, PHOTO_W_PX, PHOTO_H_PX);
     croppedDataUrl = canvas.toDataURL('image/jpeg', 0.95);
-  }
-
-  function showPreview() {
-    // Generate 8 thumbnails
-    previewGrid.innerHTML = '';
+    const grid = document.getElementById('preview-grid');
+    grid.innerHTML = '';
     for (let i = 0; i < 8; i++) {
-      const img = document.createElement('img');
-      img.src = croppedDataUrl;
-      img.alt = 'Fototessera ' + (i + 1);
-      previewGrid.appendChild(img);
+        const img = document.createElement('img'); img.src = croppedDataUrl;
+        grid.appendChild(img);
     }
     showStep('step-preview');
-  }
+  });
 
-  // ── Step 3: Generate PDF ──
-  btnGeneratePdf.addEventListener('click', generatePDF);
-
-  function generatePDF() {
-    btnGeneratePdf.classList.add('loading');
-
-    // Use setTimeout to allow spinner to render
+  document.getElementById('btn-generate-pdf').addEventListener('click', () => {
+    document.getElementById('btn-generate-pdf').classList.add('loading');
     setTimeout(() => {
-      try {
-        const { jsPDF } = window.jspdf;
-        const doc = new jsPDF({
-          orientation: 'portrait',
-          unit: 'mm',
-          format: 'a4'
-        });
-
-        // Draw thin cut guides and photos
+        const doc = new jspdf.jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a5' });
         for (let row = 0; row < ROWS; row++) {
           for (let col = 0; col < COLS; col++) {
-            const x = GRID_OFFSET_X + col * (PHOTO_W_MM + GRID_GAP_MM);
-            const y = GRID_OFFSET_Y + row * (PHOTO_H_MM + GRID_GAP_MM);
-
-            // Photo
-            doc.addImage(croppedDataUrl, 'JPEG', x, y, PHOTO_W_MM, PHOTO_H_MM);
-
-            // Cut marks (small lines at corners, 3mm long)
-            const markLen = 3;
-            doc.setDrawColor(180, 180, 180);
-            doc.setLineWidth(0.2);
-
-            // Top-left
-            doc.line(x - markLen, y, x - 0.5, y);
-            doc.line(x, y - markLen, x, y - 0.5);
-            // Top-right
-            doc.line(x + PHOTO_W_MM + 0.5, y, x + PHOTO_W_MM + markLen, y);
-            doc.line(x + PHOTO_W_MM, y - markLen, x + PHOTO_W_MM, y - 0.5);
-            // Bottom-left
-            doc.line(x - markLen, y + PHOTO_H_MM, x - 0.5, y + PHOTO_H_MM);
-            doc.line(x, y + PHOTO_H_MM + 0.5, x, y + PHOTO_H_MM + markLen);
-            // Bottom-right
-            doc.line(x + PHOTO_W_MM + 0.5, y + PHOTO_H_MM, x + PHOTO_W_MM + markLen, y + PHOTO_H_MM);
-            doc.line(x + PHOTO_W_MM, y + PHOTO_H_MM + 0.5, x + PHOTO_W_MM, y + PHOTO_H_MM + markLen);
+            doc.addImage(croppedDataUrl, 'JPEG', GRID_OFFSET_X + col * (PHOTO_W_MM + GRID_GAP_MM), GRID_OFFSET_Y + row * (PHOTO_H_MM + GRID_GAP_MM), PHOTO_W_MM, PHOTO_H_MM);
           }
         }
-
-        // Footer info
-        doc.setFontSize(7);
-        doc.setTextColor(160, 160, 160);
-        doc.text('Fototessera — 35 × 45 mm — Stampare al 100% su carta A4', A4_W / 2, A4_H - 8, { align: 'center' });
-
-        doc.save('fototessera.pdf');
-      } catch (err) {
-        console.error('PDF generation error:', err);
-        alert('Errore nella generazione del PDF. Riprova.');
-      } finally {
-        btnGeneratePdf.classList.remove('loading');
-      }
+        doc.save('fototessera_a5.pdf');
+        document.getElementById('btn-generate-pdf').classList.remove('loading');
     }, 50);
-  }
-
-  // ── Back buttons ──
-  btnBackUpload.addEventListener('click', () => {
-    showStep('step-upload');
-    // Reset file inputs so the same file can be re-selected
-    inputCamera.value = '';
-    inputGallery.value = '';
   });
 
-  btnBackCrop.addEventListener('click', () => {
-    showStep('step-crop');
-  });
+  document.getElementById('btn-back-upload').addEventListener('click', () => showStep('step-upload'));
+  document.getElementById('btn-back-crop').addEventListener('click', () => showStep('step-crop'));
 })();
 </script>
 </body>
