@@ -3,68 +3,80 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Fototessera A5</title>
+<title>Fototessera A4</title>
 <style>
-  body { font-family: sans-serif; display: flex; flex-direction: column; align-items: center; padding: 20px; }
-  .btn { padding: 15px 30px; background: #3B82F6; color: white; border: none; border-radius: 8px; cursor: pointer; margin-top: 20px; }
-  #canvas-preview { max-width: 100%; height: auto; }
+  body { font-family: sans-serif; padding: 20px; display: flex; flex-direction: column; align-items: center; }
+  .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; margin: 20px 0; }
+  .slot { width: 35px; height: 45px; border: 2px solid #ccc; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+  .slot.active { border-color: #3B82F6; background: #e0f2fe; }
+  .btn-container { display: flex; gap: 10px; margin-bottom: 20px; }
+  .btn { padding: 15px 20px; background: #3B82F6; color: white; border: none; border-radius: 8px; cursor: pointer; }
+  .btn-secondary { background: #6B7280; }
 </style>
-<!-- Caricamento robusto della libreria -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 <body>
-<h1>Fototessera A5 (Layout Orizzontale)</h1>
-<input type="file" id="input" accept="image/*">
-<div id="status"></div>
-<button class="btn" id="btn-pdf">Genera PDF (A5 Orizzontale)</button>
+<h1>Layout Fototessera (16 su A4)</h1>
+
+<div class="btn-container">
+  <button class="btn" onclick="document.getElementById('input-camera').click()">Scatta Foto</button>
+  <button class="btn btn-secondary" onclick="document.getElementById('input-gallery').click()">Galleria</button>
+</div>
+
+<input type="file" id="input-camera" accept="image/*" capture="environment" style="display:none">
+<input type="file" id="input-gallery" accept="image/*" style="display:none">
+
+<div id="grid" class="grid"></div>
+<button class="btn" id="btn-pdf">Genera PDF A4</button>
 
 <script>
   let dataUrl = null;
-  // Utility per verificare l'oggetto
-  function checkLib() {
-      // Alcune versioni di jspdf mettono jsPDF direttamente in window
-      if (typeof window.jspdf !== 'undefined') return window.jspdf.jsPDF;
-      if (typeof window.jsPDF !== 'undefined') return window.jsPDF;
-      return null;
+  // 16 slots for 4x4 grid
+  let selected = new Array(16).fill(false);
+  const gridEl = document.getElementById('grid');
+
+  for(let i=0; i<16; i++) {
+    let div = document.createElement('div');
+    div.className = 'slot';
+    div.onclick = () => { selected[i] = !selected[i]; div.classList.toggle('active'); };
+    gridEl.appendChild(div);
   }
 
-  document.getElementById('input').onchange = (e) => {
+  function handleFile(file) {
     let reader = new FileReader();
-    reader.onload = (e) => {
+    reader.onload = (ev) => {
         const img = new Image();
         img.onload = () => {
             const canvas = document.createElement('canvas');
             canvas.width = 350; canvas.height = 450;
             canvas.getContext('2d').drawImage(img, 0, 0, img.naturalWidth, img.naturalHeight, 0, 0, 350, 450);
             dataUrl = canvas.toDataURL('image/jpeg', 0.9);
-            document.getElementById('status').innerText = "Foto caricata.";
+            alert('Foto caricata!');
         };
-        img.src = e.target.result;
+        img.src = ev.target.result;
     };
-    reader.readAsDataURL(e.target.files[0]);
-  };
+    reader.readAsDataURL(file);
+  }
+
+  document.getElementById('input-camera').onchange = (e) => e.target.files[0] && handleFile(e.target.files[0]);
+  document.getElementById('input-gallery').onchange = (e) => e.target.files[0] && handleFile(e.target.files[0]);
 
   document.getElementById('btn-pdf').onclick = () => {
     if(!dataUrl) return alert('Carica prima una foto');
-
-    // Tentativo di recupero libreria
-    const jsPDF = checkLib();
-    if(!jsPDF) return alert('Libreria PDF non caricata. Controlla connessione.');
-
-    try {
-        // Formato [width, height] in mm (A5 Orizzontale: 210x148)
-        const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: [210, 148] });
-
-        // Layout 4 colonne, 2 righe
-        for(let row=0; row<2; row++) {
-            for(let col=0; col<4; col++) {
-                doc.addImage(dataUrl, 'JPEG', 10 + (col*40), 10 + (row*55), 35, 45);
-            }
+    const { jsPDF } = window.jspdf || window;
+    // A4 Portrait
+    const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+    selected.forEach((active, i) => {
+        if(active) {
+            let row = Math.floor(i / 4);
+            let col = i % 4;
+            // A4: 210x297. Grid 4x4 of 35x45mm with 3mm gap
+            // Grid width: 4*35 + 3*3 = 149mm. Offset: (210-149)/2 = 30.5mm
+            // Grid height: 4*45 + 3*3 = 189mm. Offset: (297-189)/2 = 54mm
+            doc.addImage(dataUrl, 'JPEG', 30.5 + (col*38), 54 + (row*48), 35, 45);
         }
-        doc.save('fototessera_a5.pdf');
-    } catch (e) {
-        alert('Errore PDF: ' + e.message);
-    }
+    });
+    doc.save('fototessera_a4.pdf');
   };
 </script>
 </body>
