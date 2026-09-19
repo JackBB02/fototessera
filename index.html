@@ -2,78 +2,76 @@
 <html lang="it">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
 <title>Fototessera</title>
 <style>
   :root {
     --bg-color: #f2f2f7;
-    --card-bg: rgba(255, 255, 255, 0.85);
+    --card-bg: rgba(255, 255, 255, 0.9);
     --primary: #007aff;
     --text: #000;
     --secondary: #8E8E93;
     --border: rgba(0, 0, 0, 0.05);
+    --action: #34c759;
   }
 
   body {
-    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
     background-color: var(--bg-color);
-    padding: 20px;
+    padding: 10px;
     display: flex;
     flex-direction: column;
     align-items: center;
+    margin: 0;
   }
 
-  .container {
-    max-width: 500px;
-    width: 100%;
-  }
+  .container { max-width: 500px; width: 100%; }
 
-  h1 { font-size: 28px; font-weight: 700; margin-bottom: 20px; }
+  h1 { font-size: 20px; font-weight: 700; margin: 0 0 10px; text-align: center; }
 
   .card {
     background: var(--card-bg);
     backdrop-filter: blur(20px);
-    border-radius: 20px;
-    padding: 20px;
-    margin-bottom: 20px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-    border: 1px solid rgba(255,255,255,0.3);
+    border-radius: 16px;
+    padding: 12px;
+    margin-bottom: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.03);
   }
 
-  .grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
+  .grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; }
 
   .slot {
     aspect-ratio: 35/45;
     border: 1px solid var(--border);
-    border-radius: 8px;
+    border-radius: 6px;
     cursor: pointer;
     background: #fff;
-    transition: transform 0.2s, background 0.2s;
   }
 
   .slot.active { border-color: var(--primary); background: #e0f2fe; }
 
-  .btn-container { display: flex; gap: 10px; margin-bottom: 10px; }
+  .btn-container { display: flex; gap: 8px; margin-bottom: 8px; }
 
   .btn {
     flex: 1;
-    padding: 14px 20px;
+    padding: 10px;
     background: var(--primary);
     color: white;
     border: none;
-    border-radius: 12px;
+    border-radius: 10px;
     cursor: pointer;
     font-weight: 600;
-    font-size: 16px;
+    font-size: 14px;
+    flex-wrap: wrap;
   }
   .btn-secondary { background: var(--secondary); }
-  .btn-action { background: #34c759; }
+  .btn-action { background: var(--action); }
 
   .pdf-btn {
     width: 100%;
-    padding: 18px;
-    font-size: 18px;
-    margin-top: 10px;
+    padding: 14px;
+    font-size: 16px;
+    margin-top: 0;
   }
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -83,22 +81,20 @@
   <h1>Fototessera</h1>
 
   <div class="card">
-    <div class="btn-container">
-      <button class="btn" onclick="document.getElementById('input-camera').click()">Scatta Foto</button>
+    <div class="btn-container" style="flex-wrap: wrap; margin-bottom: 8px;">
+      <button class="btn" onclick="document.getElementById('input-camera').click()">Scatta</button>
       <button class="btn btn-secondary" onclick="document.getElementById('input-gallery').click()">Galleria</button>
-    </div>
-    <div class="btn-container">
-      <button class="btn btn-action" id="btn-select-all">Seleziona Tutto</button>
-      <button class="btn btn-secondary" id="btn-deselect-all">Rimuovi Tutto</button>
+      <button class="btn btn-action" id="btn-select-all">Tutto</button>
+      <button class="btn btn-secondary" id="btn-deselect-all">Niente</button>
     </div>
   </div>
-
-  <input type="file" id="input-camera" accept="image/*" capture="environment" style="display:none">
-  <input type="file" id="input-gallery" accept="image/*" style="display:none">
 
   <div class="card">
     <div id="grid" class="grid"></div>
   </div>
+
+  <input type="file" id="input-camera" accept="image/*" capture="environment" style="display:none">
+  <input type="file" id="input-gallery" accept="image/*" style="display:none">
 
   <button class="btn pdf-btn" id="btn-pdf">Genera PDF A4</button>
 </div>
@@ -141,6 +137,7 @@
             canvas.width = 350; canvas.height = 450;
             canvas.getContext('2d').drawImage(img, 0, 0, img.naturalWidth, img.naturalHeight, 0, 0, 350, 450);
             dataUrl = canvas.toDataURL('image/jpeg', 0.9);
+            alert('Foto caricata!');
         };
         img.src = ev.target.result;
     };
