@@ -3,487 +3,71 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="theme-color" content="#1B2A4A">
 <title>Fototessera A5</title>
-<link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoiRm90b3Rlc3NlcmEiLCJzaG9ydF9uYW1lIjoiRm90b3Rlc3NlcmEiLCJzdGFydF91cmwiOiIuIiwiZGlzcGxheSI6InN0YW5kYWxvbmUiLCJiYWNrZ3JvdW5kX2NvbG9yIjoiI0ZBRkFGQSIsInRoZW1lX2NvbG9yIjoiIzFCMkE0QSJ9">
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
-
-  *, *::before, *::after {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-  }
-
-  :root {
-    --blue-deep: #1B2A4A;
-    --white-warm: #FAFAFA;
-    --grey-mid: #6B7280;
-    --blue-accent: #3B82F6;
-    --grey-border: #E5E7EB;
-    --grey-light: #F3F4F6;
-    --red-soft: #EF4444;
-  }
-
-  html, body {
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-    background: var(--white-warm);
-    color: var(--blue-deep);
-    line-height: 1.5;
-    font-size: 16px;
-    min-height: 100dvh;
-    -webkit-font-smoothing: antialiased;
-  }
-
-  .app {
-    max-width: 420px;
-    margin: 0 auto;
-    padding: 0 20px 40px;
-    min-height: 100dvh;
-    display: flex;
-    flex-direction: column;
-  }
-
-  header {
-    padding: 24px 0 8px;
-    text-align: center;
-  }
-
-  header h1 {
-    font-size: 22px;
-    font-weight: 600;
-    letter-spacing: -0.02em;
-    color: var(--blue-deep);
-  }
-
-  header p {
-    font-size: 14px;
-    color: var(--grey-mid);
-    margin-top: 4px;
-  }
-
-  .step {
-    display: none;
-    flex-direction: column;
-    flex: 1;
-  }
-
-  .step.active {
-    display: flex;
-  }
-
-  .upload-area {
-    margin-top: 24px;
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 24px;
-  }
-
-  .upload-zone {
-    width: 100%;
-    aspect-ratio: 3 / 4;
-    max-height: 400px;
-    border: 2px dashed var(--grey-border);
-    border-radius: 12px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 16px;
-    cursor: pointer;
-    transition: border-color 0.2s;
-    background: var(--grey-light);
-  }
-
-  .upload-zone:active {
-    border-color: var(--blue-accent);
-  }
-
-  .upload-zone svg {
-    width: 48px;
-    height: 48px;
-    color: var(--grey-mid);
-  }
-
-  .upload-zone span {
-    font-size: 15px;
-    color: var(--grey-mid);
-    text-align: center;
-    padding: 0 20px;
-  }
-
-  .upload-buttons {
-    display: flex;
-    gap: 12px;
-    width: 100%;
-  }
-
-  .btn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    padding: 14px 24px;
-    border: none;
-    border-radius: 10px;
-    font-family: inherit;
-    font-size: 15px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: opacity 0.15s;
-    width: 100%;
-  }
-
-  .btn:active {
-    opacity: 0.8;
-  }
-
-  .btn-primary {
-    background: var(--blue-accent);
-    color: #fff;
-  }
-
-  .btn-secondary {
-    background: var(--grey-light);
-    color: var(--blue-deep);
-    border: 1px solid var(--grey-border);
-  }
-
-  .crop-container {
-    position: relative;
-    width: 100%;
-    margin-top: 16px;
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    min-height: 0;
-  }
-
-  .crop-canvas-wrap {
-    position: relative;
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
-    border-radius: 12px;
-    background: #000;
-    touch-action: none;
-  }
-
-  .crop-canvas-wrap img {
-    max-width: 100%;
-    max-height: 100%;
-    display: block;
-    user-select: none;
-    -webkit-user-drag: none;
-    pointer-events: none;
-  }
-
-  .crop-overlay {
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-  }
-
-  .crop-rect {
-    position: absolute;
-    border: 2px solid #fff;
-    box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.55);
-    pointer-events: auto;
-    touch-action: none;
-    cursor: move;
-  }
-
-  .crop-rect::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    border: 1px dashed rgba(255, 255, 255, 0.4);
-  }
-
-  .crop-handle {
-    position: absolute;
-    width: 28px;
-    height: 28px;
-    pointer-events: auto;
-    touch-action: none;
-  }
-
-  .crop-handle::after {
-    content: '';
-    position: absolute;
-    width: 14px;
-    height: 14px;
-    background: #fff;
-    border-radius: 2px;
-  }
-
-  .crop-handle.tl { top: -14px; left: -14px; cursor: nw-resize; }
-  .crop-handle.tl::after { bottom: 0; right: 0; }
-  .crop-handle.tr { top: -14px; right: -14px; cursor: ne-resize; }
-  .crop-handle.tr::after { bottom: 0; left: 0; }
-  .crop-handle.bl { bottom: -14px; left: -14px; cursor: sw-resize; }
-  .crop-handle.bl::after { top: 0; right: 0; }
-  .crop-handle.br { bottom: -14px; right: -14px; cursor: se-resize; }
-  .crop-handle.br::after { top: 0; left: 0; }
-
-  .crop-info {
-    text-align: center;
-    padding: 12px 0 4px;
-    font-size: 13px;
-    color: var(--grey-mid);
-  }
-
-  .crop-actions {
-    display: flex;
-    gap: 12px;
-    margin-top: 16px;
-    padding-bottom: 8px;
-  }
-
-  .preview-section {
-    margin-top: 16px;
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-  }
-
-  .preview-grid-wrap {
-    background: #fff;
-    border: 1px solid var(--grey-border);
-    border-radius: 12px;
-    padding: 16px;
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .preview-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    grid-template-rows: repeat(4, 1fr);
-    gap: 6px;
-    max-width: 140px;
-    width: 100%;
-  }
-
-  .preview-grid img {
-    width: 100%;
-    aspect-ratio: 35 / 45;
-    object-fit: cover;
-    border-radius: 2px;
-    border: 1px solid var(--grey-border);
-  }
-
-  .preview-info {
-    text-align: center;
-    padding: 12px 0 4px;
-    font-size: 13px;
-    color: var(--grey-mid);
-  }
-
-  .preview-actions {
-    display: flex;
-    gap: 12px;
-    margin-top: 16px;
-    padding-bottom: 8px;
-  }
-
-  .spinner {
-    display: none;
-    width: 24px;
-    height: 24px;
-    border: 3px solid rgba(255,255,255,0.3);
-    border-top-color: #fff;
-    border-radius: 50%;
-    animation: spin 0.6s linear infinite;
-  }
-
-  @keyframes spin {
-    to { transform: rotate(360deg); }
-  }
-
-  .btn.loading .spinner { display: block; }
-  .btn.loading .btn-label { display: none; }
-
-  input[type="file"] {
-    display: none;
-  }
+  :root { --blue-deep: #1B2A4A; --white-warm: #FAFAFA; --blue-accent: #3B82F6; --grey-border: #E5E7EB; --grey-light: #F3F4F6; }
+  body { font-family: 'Inter', sans-serif; background: var(--white-warm); color: var(--blue-deep); margin: 0; padding: 20px; }
+  .app { max-width: 420px; margin: 0 auto; }
+  .btn { padding: 14px 24px; border: none; border-radius: 10px; font-weight: 500; cursor: pointer; width: 100%; margin-top: 10px; background: var(--blue-accent); color: #fff; }
+  .step { display: none; } .step.active { display: block; }
+  .upload-zone { width: 100%; aspect-ratio: 3/4; border: 2px dashed var(--grey-border); border-radius: 12px; display: flex; align-items: center; justify-content: center; cursor: pointer; background: var(--grey-light); }
+  #crop-wrap { width: 100%; aspect-ratio: 3/4; background: #000; overflow: hidden; position: relative; }
+  #crop-img { max-width: 100%; max-height: 100%; position: absolute; top:50%; left:50%; transform:translate(-50%,-50%); }
+  #crop-rect { position: absolute; border: 2px solid #fff; box-shadow: 0 0 0 9999px rgba(0,0,0,0.55); cursor: move; }
+  .preview-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
 </style>
 </head>
 <body>
-
 <div class="app">
-  <header>
-    <h1>Fototessera A5</h1>
-    <p>Formato italiano 35 × 45 mm — 8 foto su A5</p>
-  </header>
-
   <div class="step active" id="step-upload">
-    <div class="upload-area">
-      <div class="upload-zone" id="upload-zone">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-          <rect x="3" y="3" width="18" height="18" rx="3"/>
-          <circle cx="8.5" cy="8.5" r="1.5"/>
-          <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/>
-        </svg>
-        <span>Carica o scatta una foto</span>
-      </div>
-      <div class="upload-buttons">
-        <button class="btn btn-primary" id="btn-camera">Scatta</button>
-        <button class="btn btn-secondary" id="btn-gallery">Galleria</button>
-      </div>
-    </div>
-    <input type="file" accept="image/*" capture="user" id="input-camera">
-    <input type="file" accept="image/*" id="input-gallery">
+    <h1>Fototessera A5</h1>
+    <div class="upload-zone" id="upload-zone">Tocca per caricare</div>
+    <input type="file" accept="image/*" id="input-file" style="display:none">
   </div>
-
   <div class="step" id="step-crop">
-    <div class="crop-container">
-      <div class="crop-canvas-wrap" id="crop-wrap">
-        <img id="crop-img" src="" alt="Foto">
-        <div class="crop-overlay">
-          <div class="crop-rect" id="crop-rect">
-            <div class="crop-handle tl" data-handle="tl"></div>
-            <div class="crop-handle tr" data-handle="tr"></div>
-            <div class="crop-handle bl" data-handle="bl"></div>
-            <div class="crop-handle br" data-handle="br"></div>
-          </div>
-        </div>
-      </div>
-      <p class="crop-info">Ritaglia il viso</p>
-    </div>
-    <div class="crop-actions">
-      <button class="btn btn-secondary" id="btn-back-upload">Indietro</button>
-      <button class="btn btn-primary" id="btn-confirm-crop">Ritaglia</button>
-    </div>
+    <div id="crop-wrap"><img id="crop-img" src=""> <div id="crop-rect"></div></div>
+    <button class="btn" id="btn-crop">Ritaglia</button>
   </div>
-
   <div class="step" id="step-preview">
-    <div class="preview-section">
-      <div class="preview-grid-wrap">
-        <div class="preview-grid" id="preview-grid"></div>
-      </div>
-      <p class="preview-info">Griglia 2 × 4 — foglio A5</p>
-    </div>
-    <div class="preview-actions">
-      <button class="btn btn-secondary" id="btn-back-crop">Indietro</button>
-      <button class="btn btn-primary" id="btn-generate-pdf">
-        <span class="btn-label">Genera PDF A5</span>
-        <div class="spinner"></div>
-      </button>
-    </div>
+    <div class="preview-grid" id="preview-grid"></div>
+    <button class="btn" id="btn-pdf">Genera PDF A5</button>
   </div>
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.2/jspdf.umd.min.js"></script>
 <script>
-(function() {
-  'use strict';
-  const PHOTO_W_MM = 35;
-  const PHOTO_H_MM = 45;
-  const ASPECT = PHOTO_W_MM / PHOTO_H_MM;
-  const COLS = 2;
-  const ROWS = 4;
-  const A5_W = 148;
-  const A5_H = 210;
-  const GRID_GAP_MM = 3;
-  const GRID_TOTAL_W = COLS * PHOTO_W_MM + (COLS - 1) * GRID_GAP_MM;
-  const GRID_TOTAL_H = ROWS * PHOTO_H_MM + (ROWS - 1) * GRID_GAP_MM;
-  const GRID_OFFSET_X = (A5_W - GRID_TOTAL_W) / 2;
-  const GRID_OFFSET_Y = (A5_H - GRID_TOTAL_H) / 2;
-  const DPI = 300;
-  const PHOTO_W_PX = Math.round(PHOTO_W_MM / 25.4 * DPI);
-  const PHOTO_H_PX = Math.round(PHOTO_H_MM / 25.4 * DPI);
+  let imgElement = document.getElementById('crop-img');
+  let croppedDataUrl = null;
 
-  const steps = document.querySelectorAll('.step');
-  // Simple selectors for this version
-  document.getElementById('upload-zone').addEventListener('click', () => document.getElementById('input-gallery').click());
-  document.getElementById('btn-camera').addEventListener('click', () => document.getElementById('input-camera').click());
-  document.getElementById('btn-gallery').addEventListener('click', () => document.getElementById('input-gallery').click());
+  document.getElementById('upload-zone').onclick = () => document.getElementById('input-file').click();
+  document.getElementById('input-file').onchange = (e) => {
+    let reader = new FileReader();
+    reader.onload = (ev) => { imgElement.src = ev.target.result; document.querySelectorAll('.step').forEach(s => s.classList.remove('active')); document.getElementById('step-crop').classList.add('active'); };
+    reader.readAsDataURL(e.target.files[0]);
+  };
 
-  function handleFile(file) {
-    if (!file || !file.type.startsWith('image/')) return;
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      const img = new Image();
-      img.onload = () => {
-        originalImage = img;
-        initCrop();
-      };
-      img.src = e.target.result;
-    };
-    reader.readAsDataURL(file);
-  }
-
-  document.getElementById('input-camera').addEventListener('change', (e) => e.target.files[0] && handleFile(e.target.files[0]));
-  document.getElementById('input-gallery').addEventListener('change', (e) => e.target.files[0] && handleFile(e.target.files[0]));
-
-  let originalImage = null, croppedDataUrl = null;
-  let crop = { x: 0, y: 0, w: 0, h: 0 }, imgDisplay = { x: 0, y: 0, w: 0, h: 0 };
-
-  function showStep(id) {
-    steps.forEach(s => s.classList.remove('active'));
-    document.getElementById(id).classList.add('active');
-  }
-
-  function initCrop() {
-    document.getElementById('crop-img').src = originalImage.src;
-    showStep('step-crop');
-    requestAnimationFrame(() => {
-        const wrapRect = document.getElementById('crop-wrap').getBoundingClientRect();
-        const imgRect = document.getElementById('crop-img').getBoundingClientRect();
-        imgDisplay = { x: imgRect.left - wrapRect.left, y: imgRect.top - wrapRect.top, w: imgRect.width, h: imgRect.height };
-        let cw = imgDisplay.w * 0.8, ch = cw / ASPECT;
-        crop = { x: imgDisplay.x + (imgDisplay.w - cw) / 2, y: imgDisplay.y + (imgDisplay.h - ch) / 2, w: cw, h: ch };
-        applyCropRect();
-    });
-  }
-
-  function applyCropRect() {
-    const r = document.getElementById('crop-rect');
-    r.style.cssText = `left:${crop.x}px; top:${crop.y}px; width:${crop.w}px; height:${crop.h}px;`;
-  }
-
-  document.getElementById('btn-confirm-crop').addEventListener('click', () => {
-    const scaleX = originalImage.naturalWidth / imgDisplay.w, scaleY = originalImage.naturalHeight / imgDisplay.h;
+  document.getElementById('btn-crop').onclick = () => {
     const canvas = document.createElement('canvas');
-    canvas.width = PHOTO_W_PX; canvas.height = PHOTO_H_PX;
-    canvas.getContext('2d').drawImage(originalImage, (crop.x - imgDisplay.x) * scaleX, (crop.y - imgDisplay.y) * scaleY, crop.w * scaleX, crop.h * scaleY, 0, 0, PHOTO_W_PX, PHOTO_H_PX);
-    croppedDataUrl = canvas.toDataURL('image/jpeg', 0.95);
-    const grid = document.getElementById('preview-grid');
-    grid.innerHTML = '';
-    for (let i = 0; i < 8; i++) {
-        const img = document.createElement('img'); img.src = croppedDataUrl;
-        grid.appendChild(img);
-    }
-    showStep('step-preview');
-  });
+    canvas.width = 413; canvas.height = 531;
+    canvas.getContext('2d').drawImage(imgElement, 0, 0, imgElement.naturalWidth, imgElement.naturalHeight, 0, 0, 413, 531);
+    croppedDataUrl = canvas.toDataURL('image/jpeg', 0.9);
+    document.querySelectorAll('.step').forEach(s => s.classList.remove('active')); document.getElementById('step-preview').classList.add('active');
+  };
 
-  document.getElementById('btn-generate-pdf').addEventListener('click', () => {
-    document.getElementById('btn-generate-pdf').classList.add('loading');
-    setTimeout(() => {
-        const doc = new jspdf.jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a5' });
-        for (let row = 0; row < ROWS; row++) {
-          for (let col = 0; col < COLS; col++) {
-            doc.addImage(croppedDataUrl, 'JPEG', GRID_OFFSET_X + col * (PHOTO_W_MM + GRID_GAP_MM), GRID_OFFSET_Y + row * (PHOTO_H_MM + GRID_GAP_MM), PHOTO_W_MM, PHOTO_H_MM);
-          }
+  document.getElementById('btn-pdf').onclick = async () => {
+    try {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a5' });
+        for(let i=0; i<8; i++) {
+            doc.addImage(croppedDataUrl, 'JPEG', (i%2)*38+10, Math.floor(i/2)*48+10, 35, 45);
         }
-        doc.save('fototessera_a5.pdf');
-        document.getElementById('btn-generate-pdf').classList.remove('loading');
-    }, 50);
-  });
-
-  document.getElementById('btn-back-upload').addEventListener('click', () => showStep('step-upload'));
-  document.getElementById('btn-back-crop').addEventListener('click', () => showStep('step-crop'));
-})();
+        doc.save('fototessera.pdf');
+    } catch (e) {
+        alert('Errore: ' + e.message);
+        console.error(e);
+    }
+  };
 </script>
 </body>
 </html>
