@@ -67,11 +67,13 @@
   .btn-secondary { background: var(--secondary); }
   .btn-action { background: var(--action); }
 
-  .pdf-btn {
-    width: 100%;
-    padding: 14px;
-    font-size: 16px;
-    margin-top: 0;
+  /* Modal styles */
+  .modal-overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.5);
+      display: none; align-items: center; justify-content: center; z-index: 100;
+  }
+  .modal {
+      background: white; border-radius: 20px; padding: 20px; text-align: center; width: 80%; max-width: 300px;
   }
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -95,8 +97,16 @@
 
   <input type="file" id="input-camera" accept="image/*" capture="environment" style="display:none">
   <input type="file" id="input-gallery" accept="image/*" style="display:none">
+</div>
 
-  <button class="btn pdf-btn" id="btn-pdf">Genera PDF A4</button>
+<!-- Modal -->
+<div class="modal-overlay" id="modal">
+    <div class="modal">
+        <h3>Foto caricata!</h3>
+        <p>Seleziona le foto dalla griglia e procedi.</p>
+        <button class="btn" id="btn-pdf-modal">Genera PDF A4</button>
+        <button class="btn btn-secondary" onclick="document.getElementById('modal').style.display='none'" style="margin-top:10px;">Chiudi</button>
+    </div>
 </div>
 
 <script>
@@ -137,7 +147,7 @@
             canvas.width = 350; canvas.height = 450;
             canvas.getContext('2d').drawImage(img, 0, 0, img.naturalWidth, img.naturalHeight, 0, 0, 350, 450);
             dataUrl = canvas.toDataURL('image/jpeg', 0.9);
-            alert('Foto caricata!');
+            document.getElementById('modal').style.display = 'flex';
         };
         img.src = ev.target.result;
     };
@@ -147,7 +157,7 @@
   document.getElementById('input-camera').onchange = (e) => e.target.files[0] && handleFile(e.target.files[0]);
   document.getElementById('input-gallery').onchange = (e) => e.target.files[0] && handleFile(e.target.files[0]);
 
-  document.getElementById('btn-pdf').onclick = () => {
+  function generatePDF() {
     if(!dataUrl) return alert('Carica una foto');
     const { jsPDF } = window.jspdf || window;
     const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
@@ -156,12 +166,14 @@
         if(active) {
             let row = Math.floor(i / 5);
             let col = i % 5;
-            // Posizionamento foto senza linee di taglio
             doc.addImage(dataUrl, 'JPEG', 11.5 + (col*38) + 1.5, 6 + (row*48) + 1.5, 35, 45);
         }
     });
     doc.save('fototessera_a4.pdf');
-  };
+    document.getElementById('modal').style.display = 'none';
+  }
+
+  document.getElementById('btn-pdf-modal').onclick = generatePDF;
 </script>
 </body>
 </html>
