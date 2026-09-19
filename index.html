@@ -2,70 +2,68 @@
 <html lang="it">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Fototessera A5</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
-  :root { --blue-deep: #1B2A4A; --white-warm: #FAFAFA; --blue-accent: #3B82F6; --grey-border: #E5E7EB; --grey-light: #F3F4F6; }
-  body { font-family: 'Inter', sans-serif; background: var(--white-warm); color: var(--blue-deep); margin: 0; padding: 20px; }
-  .app { max-width: 420px; margin: 0 auto; }
-  .btn { padding: 14px 24px; border: none; border-radius: 10px; font-weight: 500; cursor: pointer; width: 100%; margin-top: 10px; background: var(--blue-accent); color: #fff; }
-  .step { display: none; } .step.active { display: block; }
-  .upload-zone { width: 100%; aspect-ratio: 3/4; border: 2px dashed var(--grey-border); border-radius: 12px; display: flex; align-items: center; justify-content: center; cursor: pointer; background: var(--grey-light); }
-  #crop-wrap { width: 100%; aspect-ratio: 3/4; background: #000; overflow: hidden; position: relative; }
-  #crop-img { max-width: 100%; max-height: 100%; position: absolute; top:50%; left:50%; transform:translate(-50%,-50%); }
-  #crop-rect { position: absolute; border: 2px solid #fff; box-shadow: 0 0 0 9999px rgba(0,0,0,0.55); cursor: move; }
-  .preview-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  body { font-family: sans-serif; display: flex; flex-direction: column; align-items: center; padding: 20px; }
+  .btn { padding: 15px 30px; background: #3B82F6; color: white; border: none; border-radius: 8px; cursor: pointer; margin-top: 20px; }
+  #canvas-preview { max-width: 100%; height: auto; }
 </style>
+<!-- Caricamento robusto della libreria -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 <body>
-<div class="app">
-  <div class="step active" id="step-upload">
-    <h1>Fototessera A5</h1>
-    <div class="upload-zone" id="upload-zone">Tocca per caricare</div>
-    <input type="file" accept="image/*" id="input-file" style="display:none">
-  </div>
-  <div class="step" id="step-crop">
-    <div id="crop-wrap"><img id="crop-img" src=""> <div id="crop-rect"></div></div>
-    <button class="btn" id="btn-crop">Ritaglia</button>
-  </div>
-  <div class="step" id="step-preview">
-    <div class="preview-grid" id="preview-grid"></div>
-    <button class="btn" id="btn-pdf">Genera PDF A5</button>
-  </div>
-</div>
+<h1>Fototessera A5 (Layout Orizzontale)</h1>
+<input type="file" id="input" accept="image/*">
+<div id="status"></div>
+<button class="btn" id="btn-pdf">Genera PDF (A5 Orizzontale)</button>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.2/jspdf.umd.min.js"></script>
 <script>
-  let imgElement = document.getElementById('crop-img');
-  let croppedDataUrl = null;
+  let dataUrl = null;
+  // Utility per verificare l'oggetto
+  function checkLib() {
+      // Alcune versioni di jspdf mettono jsPDF direttamente in window
+      if (typeof window.jspdf !== 'undefined') return window.jspdf.jsPDF;
+      if (typeof window.jsPDF !== 'undefined') return window.jsPDF;
+      return null;
+  }
 
-  document.getElementById('upload-zone').onclick = () => document.getElementById('input-file').click();
-  document.getElementById('input-file').onchange = (e) => {
+  document.getElementById('input').onchange = (e) => {
     let reader = new FileReader();
-    reader.onload = (ev) => { imgElement.src = ev.target.result; document.querySelectorAll('.step').forEach(s => s.classList.remove('active')); document.getElementById('step-crop').classList.add('active'); };
+    reader.onload = (e) => {
+        const img = new Image();
+        img.onload = () => {
+            const canvas = document.createElement('canvas');
+            canvas.width = 350; canvas.height = 450;
+            canvas.getContext('2d').drawImage(img, 0, 0, img.naturalWidth, img.naturalHeight, 0, 0, 350, 450);
+            dataUrl = canvas.toDataURL('image/jpeg', 0.9);
+            document.getElementById('status').innerText = "Foto caricata.";
+        };
+        img.src = e.target.result;
+    };
     reader.readAsDataURL(e.target.files[0]);
   };
 
-  document.getElementById('btn-crop').onclick = () => {
-    const canvas = document.createElement('canvas');
-    canvas.width = 413; canvas.height = 531;
-    canvas.getContext('2d').drawImage(imgElement, 0, 0, imgElement.naturalWidth, imgElement.naturalHeight, 0, 0, 413, 531);
-    croppedDataUrl = canvas.toDataURL('image/jpeg', 0.9);
-    document.querySelectorAll('.step').forEach(s => s.classList.remove('active')); document.getElementById('step-preview').classList.add('active');
-  };
+  document.getElementById('btn-pdf').onclick = () => {
+    if(!dataUrl) return alert('Carica prima una foto');
 
-  document.getElementById('btn-pdf').onclick = async () => {
+    // Tentativo di recupero libreria
+    const jsPDF = checkLib();
+    if(!jsPDF) return alert('Libreria PDF non caricata. Controlla connessione.');
+
     try {
-        const { jsPDF } = window.jspdf;
-        const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a5' });
-        for(let i=0; i<8; i++) {
-            doc.addImage(croppedDataUrl, 'JPEG', (i%2)*38+10, Math.floor(i/2)*48+10, 35, 45);
+        // Formato [width, height] in mm (A5 Orizzontale: 210x148)
+        const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: [210, 148] });
+
+        // Layout 4 colonne, 2 righe
+        for(let row=0; row<2; row++) {
+            for(let col=0; col<4; col++) {
+                doc.addImage(dataUrl, 'JPEG', 10 + (col*40), 10 + (row*55), 35, 45);
+            }
         }
-        doc.save('fototessera.pdf');
+        doc.save('fototessera_a5.pdf');
     } catch (e) {
-        alert('Errore: ' + e.message);
-        console.error(e);
+        alert('Errore PDF: ' + e.message);
     }
   };
 </script>
