@@ -3,11 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Fototessera A4</title>
+<title>Fototessera A4 Guida Taglio</title>
 <style>
   body { font-family: sans-serif; padding: 20px; display: flex; flex-direction: column; align-items: center; }
-  .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; margin: 20px 0; }
-  .slot { width: 35px; height: 45px; border: 2px solid #ccc; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+  .grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; margin: 20px 0; }
+  .slot { width: 30px; height: 38px; border: 2px solid #ccc; cursor: pointer; display: flex; align-items: center; justify-content: center; }
   .slot.active { border-color: #3B82F6; background: #e0f2fe; }
   .btn-container { display: flex; gap: 10px; margin-bottom: 20px; }
   .btn { padding: 15px 20px; background: #3B82F6; color: white; border: none; border-radius: 8px; cursor: pointer; }
@@ -16,7 +16,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 <body>
-<h1>Layout Fototessera (16 su A4)</h1>
+<h1>Layout (30 su A4) + Taglio</h1>
 
 <div class="btn-container">
   <button class="btn" onclick="document.getElementById('input-camera').click()">Scatta Foto</button>
@@ -27,15 +27,14 @@
 <input type="file" id="input-gallery" accept="image/*" style="display:none">
 
 <div id="grid" class="grid"></div>
-<button class="btn" id="btn-pdf">Genera PDF A4</button>
+<button class="btn" id="btn-pdf">Genera PDF con Guide</button>
 
 <script>
   let dataUrl = null;
-  // 16 slots for 4x4 grid
-  let selected = new Array(16).fill(false);
+  let selected = new Array(30).fill(false);
   const gridEl = document.getElementById('grid');
 
-  for(let i=0; i<16; i++) {
+  for(let i=0; i<30; i++) {
     let div = document.createElement('div');
     div.className = 'slot';
     div.onclick = () => { selected[i] = !selected[i]; div.classList.toggle('active'); };
@@ -64,19 +63,31 @@
   document.getElementById('btn-pdf').onclick = () => {
     if(!dataUrl) return alert('Carica prima una foto');
     const { jsPDF } = window.jspdf || window;
-    // A4 Portrait
     const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+
+    // Configurazione guide
+    doc.setDrawColor(200, 200, 200);
+    doc.setLineDash([1, 1], 0); // Tratteggio
+
+    // Disegna linee di taglio
+    // Verticali
+    for(let col=0; col<=5; col++) {
+        doc.line(11.5 + col*38, 6, 11.5 + col*38, 291);
+    }
+    // Orizzontali
+    for(let row=0; row<=6; row++) {
+        doc.line(11.5, 6 + row*48, 201.5, 6 + row*48);
+    }
+
+    // Aggiungi foto
     selected.forEach((active, i) => {
         if(active) {
-            let row = Math.floor(i / 4);
-            let col = i % 4;
-            // A4: 210x297. Grid 4x4 of 35x45mm with 3mm gap
-            // Grid width: 4*35 + 3*3 = 149mm. Offset: (210-149)/2 = 30.5mm
-            // Grid height: 4*45 + 3*3 = 189mm. Offset: (297-189)/2 = 54mm
-            doc.addImage(dataUrl, 'JPEG', 30.5 + (col*38), 54 + (row*48), 35, 45);
+            let row = Math.floor(i / 5);
+            let col = i % 5;
+            doc.addImage(dataUrl, 'JPEG', 11.5 + (col*38), 6 + (row*48), 35, 45);
         }
     });
-    doc.save('fototessera_a4.pdf');
+    doc.save('fototessera_a4_guide.pdf');
   };
 </script>
 </body>
